@@ -1,0 +1,12 @@
+<nav class="navbar navbar-dark bg-dark px-3">
+  <a class="navbar-brand fw-bold" href="/">SpotDrop</a>
+  <div class="d-flex gap-2">
+    {{#if user}}
+      <span class="navbar-text me-2">{{user.username}}</span>
+      <a href="/logout" class="btn btn-outline-light btn-sm">Log Out</a>
+    {{else}}
+      <a href="/login" class="btn btn-outline-light btn-sm">Log In</a>
+      <a href="/register" class="btn btn-light btn-sm">Sign Up</a>
+    {{/if}}
+  </div>
+</nav>

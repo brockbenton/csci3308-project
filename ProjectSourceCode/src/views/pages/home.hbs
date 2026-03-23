@@ -1,0 +1,67 @@
+<div id="map-controls" class="d-flex align-items-center gap-2 px-3 py-2 bg-white border-bottom">
+  <label for="sport-filter" class="mb-0 small fw-semibold">Filter:</label>
+  <select id="sport-filter" class="form-select form-select-sm w-auto">
+    <option value="all">All Sports</option>
+    <option value="climbing">Climbing</option>
+    <option value="skating">Skating</option>
+    <option value="skiing">Skiing</option>
+    <option value="parkour">Parkour</option>
+    <option value="other">Other</option>
+  </select>
+  {{#if user}}
+  <button id="add-spot-btn" class="btn btn-primary btn-sm ms-auto">+ Add Spot</button>
+  {{else}}
+  <a href="/login" class="btn btn-outline-secondary btn-sm ms-auto">Log in to add spots</a>
+  {{/if}}
+</div>
+
+<div id="map"></div>
+
+{{#if user}}
+<div class="modal fade" id="spotModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Add a Spot</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <p class="text-muted small">Click anywhere on the map to set the location, then fill in the details.</p>
+        <form id="spot-form">
+          <input type="hidden" id="spot-lat" name="latitude">
+          <input type="hidden" id="spot-lng" name="longitude">
+          <div id="location-display" class="mb-3 text-muted small"></div>
+          <div class="mb-3">
+            <label class="form-label">Name</label>
+            <input type="text" class="form-control" name="name" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Sport Type</label>
+            <select class="form-select" name="sport_type" required>
+              <option value="">Select a sport</option>
+              <option value="climbing">Climbing</option>
+              <option value="skating">Skating</option>
+              <option value="skiing">Skiing</option>
+              <option value="parkour">Parkour</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Difficulty</label>
+            <select class="form-select" name="difficulty">
+              <option value="beginner">Beginner</option>
+              <option value="intermediate">Intermediate</option>
+              <option value="advanced">Advanced</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Description</label>
+            <textarea class="form-control" name="description" rows="3"></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary w-100">Save Spot</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{{/if}}
