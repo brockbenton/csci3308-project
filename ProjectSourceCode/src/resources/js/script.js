@@ -60,6 +60,33 @@ if (document.getElementById('map')) {
     loadSpots(this.value);
   });
 
+  // Geolocation
+  let userMarker = null;
+
+  document.getElementById('locate-btn').addEventListener('click', function () {
+    if (!navigator.geolocation) {
+      alert('Geolocation is not supported by your browser.');
+      return;
+    }
+    navigator.geolocation.getCurrentPosition(
+      function (position) {
+        const { latitude, longitude } = position.coords;
+        map.setView([latitude, longitude], 13);
+        if (userMarker) map.removeLayer(userMarker);
+        userMarker = L.circleMarker([latitude, longitude], {
+          radius: 8,
+          color: '#fff',
+          fillColor: '#4285f4',
+          fillOpacity: 1,
+          weight: 2,
+        }).bindPopup('You are here').addTo(map);
+      },
+      function () {
+        alert('Unable to get your location.');
+      }
+    );
+  });
+
   // Add spot logic (only present when user is logged in)
   const addBtn = document.getElementById('add-spot-btn');
   const spotForm = document.getElementById('spot-form');
