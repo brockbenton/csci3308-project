@@ -15,7 +15,17 @@
   {{/if}}
 </div>
 
-<div id="map"></div>
+<div id="map-wrapper">
+  <div id="map"></div>
+  <div id="map-legend">
+    <div class="legend-title">Sports</div>
+    <div class="legend-item"><span class="legend-dot" style="background:#e74c3c;"></span>Climbing</div>
+    <div class="legend-item"><span class="legend-dot" style="background:#3498db;"></span>Skating</div>
+    <div class="legend-item"><span class="legend-dot" style="background:#2ecc71;"></span>Skiing</div>
+    <div class="legend-item"><span class="legend-dot" style="background:#f39c12;"></span>Parkour</div>
+    <div class="legend-item"><span class="legend-dot" style="background:#9b59b6;"></span>Other</div>
+  </div>
+</div>
 
 {{#if user}}
 <div class="modal fade" id="spotModal" tabindex="-1">
