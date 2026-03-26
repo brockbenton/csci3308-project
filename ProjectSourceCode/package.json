@@ -4,6 +4,7 @@
   "description": "SpotDrop - Community map for urban athletes",
   "main": "src/index.js",
   "scripts": {
+    "prestart" : "npm install",
     "start": "node src/index.js",
     "test": "mocha test/server.spec.js --exit"
   },
