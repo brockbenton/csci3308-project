@@ -2,7 +2,8 @@
 CREATE TABLE IF NOT EXISTS users (
   id SERIAL PRIMARY KEY,
   username VARCHAR(50) UNIQUE NOT NULL,
-  password VARCHAR(255) NOT NULL
+  password VARCHAR(255) NOT NULL,
+  profile_pic VARCHAR(255) DEFAULT 'default-profile.png'
 );
 
 -- Spots table (owned by Brock / map feature)
