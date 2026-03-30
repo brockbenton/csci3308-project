@@ -1,3 +1,10 @@
+-- Users table (owned by Alex / login, registration and forum features)
+CREATE TABLE IF NOT EXISTS users (
+  id SERIAL PRIMARY KEY,
+  username VARCHAR(50) UNIQUE NOT NULL,
+  password VARCHAR(255) NOT NULL
+);
+
 -- Spots table (owned by Brock / map feature)
 -- created_by will reference users(id) once Alex adds the users table
 CREATE TABLE IF NOT EXISTS spots (
@@ -8,6 +15,6 @@ CREATE TABLE IF NOT EXISTS spots (
   difficulty VARCHAR(20),
   latitude DECIMAL(10, 8) NOT NULL,
   longitude DECIMAL(11, 8) NOT NULL,
-  created_by INT,
+  created_by INT references users(id), -- now references users(id)
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
