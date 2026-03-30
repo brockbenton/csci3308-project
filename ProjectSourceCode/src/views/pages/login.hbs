@@ -2,6 +2,31 @@
 <div class="d-flex justify-content-center align-items-center" style="min-height: 80vh;">
   <div class="card p-4" style="width: 360px;">
     <h4 class="mb-3 text-center">Log In</h4>
-    <p class="text-muted text-center small">TODO: Alex implements login form</p>
+
+    {{#if message}}
+    <div class="alert alert-danger text-center">
+      {{message}}
+    </div>
+    {{/if}}
+
+    <form action="/login" method="POST">
+      
+      <div class="mb-3">
+        <label class="form-label">Username</label>
+        <input type="text" name="username" class="form-control" required>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Password</label>
+        <input type="password" name="password" class="form-control" required>
+      </div>
+
+      <button type="submit" class="btn btn-primary w-100">Login</button>
+    </form>
+
+{{!-- redirects to register page --}}
+    <p class="text-center mt-3 small">
+      Don't have an account? <a=href="/register">Register here</a>
+    </p>
   </div>
 </div>
