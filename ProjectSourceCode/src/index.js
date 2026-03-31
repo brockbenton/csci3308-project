@@ -4,6 +4,7 @@ const session = require('express-session');
 const { Pool } = require('pg');
 const path = require('path');
 
+const bcrypt = require('bcryptjs'); //bycrypt
 const app = express();
 const PORT = 3000;
 
@@ -84,7 +85,9 @@ app.post('/login', async (req, res) => {
   const { username, password } = req.body;
 
   try {
-    const user = await db.oneOrNone('SELECT * FROM users WHERE username = $1', [username]);
+    const result = await db.query('SELECT * FROM users WHERE username = $1', [username]);
+    const user = result.rows[0];
+
 
     if (!user) {
       return res.render('pages/login', { message: "Username not found. Please register before logging in." });
@@ -94,17 +97,17 @@ app.post('/login', async (req, res) => {
     if (match) {
       req.session.user = user;
       req.session.save(() => {
-        res.redirect('/home');
+        res.redirect('/');
       });
 
     } else {
       res.render('pages/login', { message: "Incorrect password. Please try again." });
     }
-  } catch {
+  } catch (error) {
     console.error(error);
     res.redirect('/login');
   }
-  });
+});
 
 app.get('/register', (req, res) => {
   res.render('pages/register');
@@ -115,22 +118,16 @@ app.post('/register', async (req, res) => {
   const { username, password } = req.body;
 
   try {
-    const hash = await bcrypt.hash(password, 10); //hashes pw
-    await db.none(
-      'INSERT INTO users(username, password) VALUES($1, $2);',
-      [username, hash]
-    );
-    res.redirect('/login');
-
+    const hash = await bcrypt.hash(password, 10); // hash the password
+    await db.query('INSERT INTO users(username, password) VALUES($1, $2)', [username, hash]);
+    res.redirect('/login'); 
   } catch (error) {
-    if (error.code === '23505') {
+    if (error.code === '23505') { 
       return res.render('pages/register', { message: 'Username already taken.' });
     }
-
     console.error(error);
-    res.redirect('/register');
+    res.redirect('/register'); 
   }
-
 });
 
 app.get('/logout', (req, res) => {
