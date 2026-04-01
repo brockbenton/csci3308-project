@@ -3,6 +3,8 @@ const { engine } = require('express-handlebars');
 const session = require('express-session');
 const { Pool } = require('pg');
 const path = require('path');
+const fs = require('fs');
+const multer = require('multer');
 
 const bcrypt = require('bcryptjs'); //bycrypt
 const app = express();
@@ -28,6 +30,18 @@ app.set('views', path.join(__dirname, 'views'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(__dirname + '/'));
+
+const uploadsDir = path.join(__dirname, 'resources/uploads');
+fs.mkdirSync(uploadsDir, { recursive: true });
+const upload = multer({
+  storage: multer.diskStorage({
+    destination: uploadsDir,
+    filename: (_req, file, cb) => {
+      const ext = path.extname(file.originalname);
+      cb(null, Date.now() + ext);
+    },
+  }),
+});
 
 app.use(session({
   secret: process.env.SESSION_SECRET || 'spotdrop_secret',
@@ -58,15 +72,16 @@ app.get('/api/spots', async (req, res) => {
   }
 });
 
-app.post('/api/spots', async (req, res) => {
+app.post('/api/spots', upload.single('media'), async (req, res) => {
   if (!req.session.user) {
     return res.status(401).json({ error: 'Must be logged in to add a spot' });
   }
   const { name, description, sport_type, difficulty, latitude, longitude } = req.body;
+  const media_filename = req.file ? req.file.filename : null;
   try {
     const result = await db.query(
-      'INSERT INTO spots (name, description, sport_type, difficulty, latitude, longitude, created_by) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
-      [name, description, sport_type, difficulty, latitude, longitude, req.session.user.id]
+      'INSERT INTO spots (name, description, sport_type, difficulty, latitude, longitude, created_by, media_filename) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *',
+      [name, description, sport_type, difficulty, latitude, longitude, req.session.user.id, media_filename]
     );
     res.json({ spot: result.rows[0] });
   } catch (err) {

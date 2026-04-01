@@ -57,6 +57,23 @@ main {
   flex-shrink: 0;
 }
 
+#lightbox {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.85);
+  z-index: 9999;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+#lightbox-img {
+  max-width: 90vw;
+  max-height: 90vh;
+  border-radius: 6px;
+}
+
 .spot-pin {
   width: 16px;
   height: 16px;
