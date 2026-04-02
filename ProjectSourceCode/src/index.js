@@ -150,6 +150,10 @@ app.get('/logout', (req, res) => {
   res.redirect('/login');
 });
 
+app.get('/welcome', (_req, res) => {
+  res.json({ status: 'success', message: 'Welcome!' });
+});
+
 app.listen(PORT, () => {
   console.log(`SpotDrop running on port ${PORT}`);
 });
