@@ -19,3 +19,11 @@ CREATE TABLE IF NOT EXISTS spots (
   created_by INT references users(id), -- now references users(id)
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+-- comments table (made by akhil so each spots have comments )
+CREATE TABLE IF NOT EXISTS comments(
+  id SERIAL PRIMARY KEY,
+  spot_id INT NOT NULL REFERENCES spots(id) ON DELETE CASCADE,
+  user_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  content TEXT NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
