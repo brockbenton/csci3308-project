@@ -19,3 +19,11 @@ CREATE TABLE IF NOT EXISTS spots (
   media_filename VARCHAR(255),
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+-- comments table (made by akhil so each spots have comments )
+CREATE TABLE IF NOT EXISTS comments(
+  id SERIAL PRIMARY KEY,
+  spot_id INT NOT NULL REFERENCES spots(id) ON DELETE CASCADE,
+  user_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  content TEXT NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
