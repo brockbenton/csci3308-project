@@ -42,17 +42,40 @@ if (document.getElementById('map')) {
       .then(res => res.json())
       .then(data => {
         data.spots.forEach(spot => {
+          let mediaHtml = '';
+          if (spot.media_filename) {
+            const url = '/resources/uploads/' + spot.media_filename;
+            mediaHtml = '<img src="' + url + '" class="spot-popup-img" style="width:100%;margin-top:6px;display:block;cursor:pointer;" title="Click to expand">';
+          }
           const marker = L.marker([spot.latitude, spot.longitude], { icon: createIcon(spot.sport_type) })
             .bindPopup(
               '<strong>' + spot.name + '</strong><br>' +
               '<em>' + spot.sport_type + ' &bull; ' + spot.difficulty + '</em>' +
-              (spot.description ? '<br>' + spot.description : '')
+              (spot.description ? '<br>' + spot.description : '') +
+              mediaHtml,
+              { maxWidth: 600, minWidth: 250 }
             )
             .addTo(map);
           markers.push(marker);
         });
       });
   }
+
+  // Lightbox for popup images
+  const lightbox = document.createElement('div');
+  lightbox.id = 'lightbox';
+  lightbox.innerHTML = '<img id="lightbox-img">';
+  document.body.appendChild(lightbox);
+  lightbox.addEventListener('click', function () {
+    lightbox.style.display = 'none';
+  });
+
+  document.getElementById('map').addEventListener('click', function (e) {
+    if (e.target.classList.contains('spot-popup-img')) {
+      document.getElementById('lightbox-img').src = e.target.src;
+      lightbox.style.display = 'flex';
+    }
+  });
 
   loadSpots('all');
 
@@ -134,12 +157,10 @@ if (document.getElementById('map')) {
 
     spotForm.addEventListener('submit', function (e) {
       e.preventDefault();
-      const data = Object.fromEntries(new FormData(spotForm));
 
       fetch('/api/spots', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
+        body: new FormData(spotForm),
       })
         .then(res => res.json())
         .then(result => {
