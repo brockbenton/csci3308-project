@@ -6,7 +6,7 @@
   "scripts": {
     "prestart" : "npm install",
     "start": "nodemon src/index.js",
-    "test": "mocha",
+    "test": "mocha test/server.spec.js --exit",
      "testandrun": "npm run prestart && npm run test && npm start"
   },
   "dependencies": {
@@ -15,7 +15,6 @@
     "express-handlebars": "^8.0.6",
     "express-session": "^1.17.3",
     "multer": "^1.4.5-lts.1",
-    "pg": "^8.11.3"
     "pg": "^8.11.3",
     "body-parser": "1.20.0",
     "handlebars": "^4.7.8",
