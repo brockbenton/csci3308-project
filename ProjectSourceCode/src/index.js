@@ -129,19 +129,22 @@ app.get('/register', (req, res) => {
 });
 
 app.post('/register', async (req, res) => {
-  // TODO: Alex implements registration logic
   const { username, password } = req.body;
 
+  if (!username || !password) {
+    return res.status(400).json({ message: 'Invalid input' });
+  }
+
   try {
-    const hash = await bcrypt.hash(password, 10); // hash the password
+    const hash = await bcrypt.hash(password, 10);
     await db.query('INSERT INTO users(username, password) VALUES($1, $2)', [username, hash]);
-    res.redirect('/login'); 
+    res.redirect('/login');
   } catch (error) {
-    if (error.code === '23505') { 
+    if (error.code === '23505') {
       return res.render('pages/register', { message: 'Username already taken.' });
     }
     console.error(error);
-    res.redirect('/register'); 
+    res.redirect('/register');
   }
 });
 
