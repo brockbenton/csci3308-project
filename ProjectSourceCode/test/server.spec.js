@@ -1,9 +1,19 @@
 const chai = require('chai');
 const chaiHttp = require('chai-http');
+const bcrypt = require('bcryptjs');
+const { Pool } = require('pg');
 const app = require('../src/index');
 const expect = chai.expect;
 
 chai.use(chaiHttp);
+
+const db = new Pool({
+  host: process.env.PGHOST || 'db',
+  port: process.env.PGPORT || 5432,
+  database: process.env.POSTGRES_DB,
+  user: process.env.POSTGRES_USER,
+  password: process.env.POSTGRES_PASSWORD,
+});
 
 describe('Spots API', () => {
   it('GET /api/spots should return an object with a spots array', done => {
@@ -38,5 +48,63 @@ describe('Spots API', () => {
         expect(res).to.have.status(401);
         done();
       });
+  });
+});
+
+describe('POST /api/spots (authenticated)', () => {
+  let agent;
+  const testUser = {
+    username: 'spottest_user',
+    password: 'testpass123',
+  };
+
+  before(async () => {
+    await db.query('DELETE FROM users WHERE username = $1', [testUser.username]);
+    const hash = await bcrypt.hash(testUser.password, 10);
+    await db.query('INSERT INTO users (username, password) VALUES ($1, $2)', [
+      testUser.username,
+      hash,
+    ]);
+  });
+
+  beforeEach(() => {
+    agent = chai.request.agent(app);
+  });
+
+  afterEach(() => {
+    agent.close();
+  });
+
+  after(async () => {
+    await db.query('DELETE FROM spots WHERE name = $1', ['Auth Spot Test']);
+    await db.query('DELETE FROM users WHERE username = $1', [testUser.username]);
+  });
+
+  it('should create a spot and return 200 when authenticated', async () => {
+    await agent.post('/login').send(testUser);
+
+    const res = await agent.post('/api/spots').send({
+      name: 'Auth Spot Test',
+      sport_type: 'skating',
+      difficulty: 'easy',
+      latitude: 39.7392,
+      longitude: -104.9903,
+    });
+
+    expect(res).to.have.status(200);
+    expect(res.body).to.have.property('spot');
+    expect(res.body.spot).to.have.property('name', 'Auth Spot Test');
+    expect(res.body.spot).to.have.property('sport_type', 'skating');
+  });
+
+  it('should return 500 when authenticated but required fields are missing', async () => {
+    await agent.post('/login').send(testUser);
+
+    const res = await agent.post('/api/spots').send({
+      description: 'Missing name, sport_type, latitude, longitude',
+    });
+
+    expect(res).to.have.status(500);
+    expect(res.body).to.have.property('error', 'Failed to add spot');
   });
 });
