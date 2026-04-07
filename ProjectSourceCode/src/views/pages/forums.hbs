@@ -1,0 +1,35 @@
+
+<div class="d-flex justify-content-center align-items-center" style="min-height: 80vh;">
+  <div class="card p-4" style="width: 360px;">
+    <h4 class="mb-3 text-center">Forums</h4>
+
+    {{#if message}}
+    <div class="alert alert-danger text-center">
+      {{message}}
+    </div>
+    {{/if}}
+    <p class="mb-3 text-center">Spot Name: {{name}}</p>
+    <p class="mb-3 text-center">Spot Location: {{location}}</p>
+    <p class="mb-3 text-center">Spot Description: {{description}}</p>
+    
+<form action="/addComment" method="POST">
+    <label for="comment">Comment</label><br>
+    <input type="text" id="comment" name="comment" required>
+
+    <button type="submit" class="btn btn-primary w-100">Add Comment</button>
+</form>
+
+<p>Comments:</p>
+<div class="container">
+{{#each comments}}
+    <div class="row">
+        <div class="card">
+            <h6 class="card-subtitle mb-2 text-muted">{{username}}</h6>
+            <p class="card-text">{{time}}: {{this}}</p>
+        </div>
+    </div>
+{{/each}}
+</div>
+
+</div>
+</div>
