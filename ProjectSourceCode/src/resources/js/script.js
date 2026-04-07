@@ -15,6 +15,16 @@ if (document.getElementById('map')) {
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
   }).addTo(map);
 
+  map.addControl(new L.Control.Search({
+    url: 'https://nominatim.openstreetmap.org/search?format=json&q={s}',
+    jsonpParam: 'json_callback',
+    propertyName: 'display_name',
+    propertyLoc: ['lat', 'lon'],
+    autoCollapse: true,
+    autoType: false,
+    minLength: 1,
+  }));
+
   let markers = [];
   let pendingMarker = null;
   let addingSpot = false;
