@@ -44,7 +44,7 @@ if (document.getElementById('map')) {
         data.spots.forEach(spot => {
           let mediaHtml = '';
           if (spot.media_filename) {
-            const url = '/resources/uploads/' + spot.media_filename;
+            const url = spot.media_filename;
             mediaHtml = '<img src="' + url + '" class="spot-popup-img" style="width:100%;margin-top:6px;display:block;cursor:pointer;" title="Click to expand">';
           }
           const marker = L.marker([spot.latitude, spot.longitude], { icon: createIcon(spot.sport_type) })

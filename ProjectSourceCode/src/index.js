@@ -3,8 +3,9 @@ const { engine } = require('express-handlebars');
 const session = require('express-session');
 const { Pool } = require('pg');
 const path = require('path');
-const fs = require('fs');
 const multer = require('multer');
+const cloudinary = require('cloudinary').v2;
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
 
 const bcrypt = require('bcryptjs'); //bycrypt
 const app = express();
@@ -31,14 +32,18 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(__dirname + '/'));
 
-const uploadsDir = path.join(__dirname, 'resources/uploads');
-fs.mkdirSync(uploadsDir, { recursive: true });
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
 const upload = multer({
-  storage: multer.diskStorage({
-    destination: uploadsDir,
-    filename: (_req, file, cb) => {
-      const ext = path.extname(file.originalname);
-      cb(null, Date.now() + ext);
+  storage: new CloudinaryStorage({
+    cloudinary,
+    params: {
+      folder: 'spotdrop',
+      allowed_formats: ['jpg', 'jpeg', 'png', 'gif', 'mp4', 'mov'],
     },
   }),
 });
@@ -77,7 +82,7 @@ app.post('/api/spots', upload.single('media'), async (req, res) => {
     return res.status(401).json({ error: 'Must be logged in to add a spot' });
   }
   const { name, description, sport_type, difficulty, latitude, longitude } = req.body;
-  const media_filename = req.file ? req.file.filename : null;
+  const media_filename = req.file ? req.file.path : null;
   try {
     const result = await db.query(
       'INSERT INTO spots (name, description, sport_type, difficulty, latitude, longitude, created_by, media_filename) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *',
