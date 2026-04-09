@@ -54,8 +54,11 @@ if (document.getElementById('map')) {
         data.spots.forEach(spot => {
           let mediaHtml = '';
           if (spot.media_filename) {
-            const url = '/resources/uploads/' + spot.media_filename;
-            mediaHtml = '<img src="' + url + '" class="spot-popup-img" style="width:100%;margin-top:6px;display:block;cursor:pointer;" title="Click to expand">';
+            mediaHtml = '<img src="' + spot.media_filename + '" class="spot-popup-img" style="width:100%;margin-top:6px;display:block;cursor:pointer;" title="Click to expand">';
+          }
+          let deleteHtml = '';
+          if (window.CURRENT_USER_ID && window.CURRENT_USER_ID === spot.created_by) {
+            deleteHtml = '<button class="btn btn-danger btn-sm mt-2 w-100 delete-spot-btn" data-id="' + spot.id + '">Delete</button>';
           }
           const marker = L.marker([spot.latitude, spot.longitude], { icon: createIcon(spot.sport_type) })
             .bindPopup(
@@ -63,12 +66,16 @@ if (document.getElementById('map')) {
   <div class="card p-3" style="width:300px;">
     <h5 class="text-center">Forums</h5>
     <p><strong>${spot.name}</strong></p>
+    <em>${spot.sport_type} &bull; ${spot.difficulty}</em>
     <p>${spot.description || ''}</p>
+    ${mediaHtml}
     <a href="/spots/${spot.id}" class="btn btn-sm btn-primary w-100 text-white">
       Open Forum
     </a>
+    ${deleteHtml}
   </div>
-`
+`,
+              { maxWidth: 600, minWidth: 250 }
             )
             .addTo(map);
           markers.push(marker);
@@ -89,6 +96,16 @@ if (document.getElementById('map')) {
     if (e.target.classList.contains('spot-popup-img')) {
       document.getElementById('lightbox-img').src = e.target.src;
       lightbox.style.display = 'flex';
+    }
+    if (e.target.classList.contains('delete-spot-btn')) {
+      const spotId = e.target.getAttribute('data-id');
+      if (!confirm('Delete this spot?')) return;
+      fetch('/api/spots/' + spotId, { method: 'DELETE' })
+        .then(res => res.json())
+        .then(data => {
+          if (data.error) { alert(data.error); return; }
+          loadSpots(document.getElementById('sport-filter').value);
+        });
     }
   });
 
