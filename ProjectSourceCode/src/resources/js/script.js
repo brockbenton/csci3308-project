@@ -15,6 +15,16 @@ if (document.getElementById('map')) {
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
   }).addTo(map);
 
+  map.addControl(new L.Control.Search({
+    url: 'https://nominatim.openstreetmap.org/search?format=json&q={s}',
+    jsonpParam: 'json_callback',
+    propertyName: 'display_name',
+    propertyLoc: ['lat', 'lon'],
+    autoCollapse: true,
+    autoType: false,
+    minLength: 1,
+  }));
+
   let markers = [];
   let pendingMarker = null;
   let addingSpot = false;
@@ -49,11 +59,16 @@ if (document.getElementById('map')) {
           }
           const marker = L.marker([spot.latitude, spot.longitude], { icon: createIcon(spot.sport_type) })
             .bindPopup(
-              '<strong>' + spot.name + '</strong><br>' +
-              '<em>' + spot.sport_type + ' &bull; ' + spot.difficulty + '</em>' +
-              (spot.description ? '<br>' + spot.description : '') +
-              mediaHtml,
-              { maxWidth: 600, minWidth: 250 }
+              `
+  <div class="card p-3" style="width:300px;">
+    <h5 class="text-center">Forums</h5>
+    <p><strong>${spot.name}</strong></p>
+    <p>${spot.description || ''}</p>
+    <a href="/spots/${spot.id}" class="btn btn-sm btn-primary w-100 text-white">
+      Open Forum
+    </a>
+  </div>
+`
             )
             .addTo(map);
           markers.push(marker);

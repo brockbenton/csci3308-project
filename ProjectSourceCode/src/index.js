@@ -167,3 +167,25 @@ app.listen(PORT, () => {
 });
 
 module.exports = app;
+// rendiering the forum page Akhil
+
+app.get('/spots/:id', async (req, res) => {
+  const spotId = req.params.id;
+
+  const spotResult = await db.query(
+  'SELECT * FROM spots WHERE id = $1',
+  [spotId]
+);
+const commentsResult = await db.query(
+  'SELECT * FROM comments WHERE spot_id = $1 ORDER BY created_at DESC',
+  [spotId]
+);
+
+const spot = spotResult.rows[0];
+const comments = commentsResult.rows;
+  res.render('pages/forums', {
+    name: spot.name,
+    description: spot.description,
+    comments: comments
+  });
+});
