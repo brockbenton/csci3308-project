@@ -177,16 +177,37 @@ app.get('/spots/:id', async (req, res) => {
   [spotId]
 );
 const commentsResult = await db.query(
-  'SELECT * FROM comments WHERE spot_id = $1 ORDER BY created_at DESC',
-  [spotId]
+  `SELECT c.content AS text,
+            c.created_at AS time,
+            u.username
+     FROM comments c
+     JOIN users u ON c.user_id = u.id
+     WHERE c.spot_id = $1
+     ORDER BY c.created_at DESC`,
+    [spotId]
 );
 
 const spot = spotResult.rows[0];
 const comments = commentsResult.rows;
   res.render('pages/forums', {
+    id: spot.id,
     name: spot.name,
     description: spot.description,
     comments: comments,
     user: req.session.user
   });
 });
+app.post('/addComment',async(req,res)=>{
+  const {comment,spotId} = req.body;
+  const userId = req.session.user.id;
+  try{
+    const addComment = await db.query(
+      'Insert into comments(spot_id,content,user_id) Values($1,$2,$3)',
+      [spotId,comment,userId]
+    );
+    res.redirect(`/spots/${spotId}`);
+  }catch(error){
+   console.log("Error in posting commments",error);
+  }
+
+})
