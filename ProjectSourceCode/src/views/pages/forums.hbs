@@ -9,10 +9,10 @@
     </div>
     {{/if}}
     <p class="mb-3 text-center">Spot Name: {{name}}</p>
-    <p class="mb-3 text-center">Spot Location: {{location}}</p>
     <p class="mb-3 text-center">Spot Description: {{description}}</p>
     
 <form action="/addComment" method="POST">
+     <input type="hidden" name="spotId" value="{{id}}">
     <label for="comment">Comment</label><br>
     <input type="text" id="comment" name="comment" required>
 
@@ -25,7 +25,7 @@
     <div class="row">
         <div class="card">
             <h6 class="card-subtitle mb-2 text-muted">{{username}}</h6>
-            <p class="card-text">{{time}}: {{this}}</p>
+            <p class="card-text">{{time}}: {{text}}</p>
         </div>
     </div>
 {{/each}}
