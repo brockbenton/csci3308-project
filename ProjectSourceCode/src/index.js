@@ -94,6 +94,22 @@ app.post('/api/spots', upload.single('media'), async (req, res) => {
   }
 });
 
+app.delete('/api/spots/:id', async (req, res) => {
+  if (!req.session.user) {
+    return res.status(401).json({ error: 'Must be logged in' });
+  }
+  const { id } = req.params;
+  try {
+    const result = await db.query('DELETE FROM spots WHERE id = $1 AND created_by = $2 RETURNING *', [id, req.session.user.id]);
+    if (result.rowCount === 0) {
+      return res.status(403).json({ error: 'Not authorized to delete this spot' });
+    }
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to delete spot' });
+  }
+});
+
 // --- Auth routes (Alex) ---
 
 app.get('/login', (req, res) => {
