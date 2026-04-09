@@ -181,6 +181,7 @@ const comments = commentsResult.rows;
   res.render('pages/forums', {
     name: spot.name,
     description: spot.description,
-    comments: comments
+    comments: comments,
+    user: req.session.user
   });
 });
