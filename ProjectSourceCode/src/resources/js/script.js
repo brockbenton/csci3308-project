@@ -64,6 +64,7 @@ if (document.getElementById('map')) {
     <h5 class="text-center">Forums</h5>
     <p><strong>${spot.name}</strong></p>
     <p>${spot.description || ''}</p>
+    ${mediaHtml}
     <a href="/spots/${spot.id}" class="btn btn-sm btn-primary w-100 text-white">
       Open Forum
     </a>
