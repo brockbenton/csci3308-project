@@ -3,6 +3,9 @@ const { engine } = require('express-handlebars');
 const session = require('express-session');
 const { Pool } = require('pg');
 const path = require('path');
+const multer = require('multer');
+const cloudinary = require('cloudinary').v2;
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
 
 const bcrypt = require('bcryptjs'); //bycrypt
 const app = express();
@@ -30,6 +33,22 @@ app.set('views', path.join(__dirname, 'views'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(__dirname + '/'));
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
+const upload = multer({
+  storage: new CloudinaryStorage({
+    cloudinary,
+    params: {
+      folder: 'spotdrop',
+      allowed_formats: ['jpg', 'jpeg', 'png', 'gif', 'mp4', 'mov'],
+    },
+  }),
+});
 
 app.use(session({
   secret: process.env.SESSION_SECRET || 'spotdrop_secret',
@@ -60,19 +79,39 @@ app.get('/api/spots', async (req, res) => {
   }
 });
 
-app.post('/api/spots', async (req, res) => {
+app.post('/api/spots', upload.single('media'), async (req, res) => {
   if (!req.session.user) {
     return res.status(401).json({ error: 'Must be logged in to add a spot' });
   }
   const { name, description, sport_type, difficulty, latitude, longitude } = req.body;
+  const media_filename = req.file ? req.file.path : null;
   try {
     const result = await db.query(
-      'INSERT INTO spots (name, description, sport_type, difficulty, latitude, longitude, created_by) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
-      [name, description, sport_type, difficulty, latitude, longitude, req.session.user.id]
+      'INSERT INTO spots (name, description, sport_type, difficulty, latitude, longitude, created_by, media_filename) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *',
+      [name, description, sport_type, difficulty, latitude, longitude, req.session.user.id, media_filename]
     );
     res.json({ spot: result.rows[0] });
   } catch (err) {
     res.status(500).json({ error: 'Failed to add spot' });
+  }
+});
+
+app.delete('/api/spots/:id', async (req, res) => {
+  if (!req.session.user) {
+    return res.status(401).json({ error: 'Must be logged in' });
+  }
+  const { id } = req.params;
+  try {
+    const result = await db.query(
+      'DELETE FROM spots WHERE id = $1 AND created_by = $2 RETURNING id',
+      [id, req.session.user.id]
+    );
+    if (result.rowCount === 0) {
+      return res.status(403).json({ error: 'Not authorized or spot not found' });
+    }
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to delete spot' });
   }
 });
 
@@ -116,7 +155,6 @@ app.get('/register', (req, res) => {
 });
 
 app.post('/register', async (req, res) => {
-  // TODO: Alex implements registration logic
   const { username, password } = req.body;
   //helps fix test error
   if (!username || !password) {
@@ -125,13 +163,17 @@ app.post('/register', async (req, res) => {
     });
   }
 
+  if (!username || !password) {
+    return res.status(400).json({ message: 'Invalid input' });
+  }
+
   try {
-    const hash = await bcrypt.hash(password, 10); // hash the password
+    const hash = await bcrypt.hash(password, 10);
     await db.query('INSERT INTO users(username, password) VALUES($1, $2)', [username, hash]);
     res.redirect('/login');
   } catch (error) {
     if (error.code === '23505') {
-      return res.status(400).json({ message: 'Username already taken.' });
+      return res.render('pages/register', { message: 'Username already taken.' });
     }
     console.error(error);
     res.redirect('/register');
@@ -143,8 +185,56 @@ app.get('/logout', (req, res) => {
   res.redirect('/login');
 });
 
+app.get('/welcome', (_req, res) => {
+  res.json({ status: 'success', message: 'Welcome!' });
+});
+
 app.listen(PORT, () => {
   console.log(`SpotDrop running on port ${PORT}`);
 });
 
 module.exports = app;
+// rendiering the forum page Akhil
+
+app.get('/spots/:id', async (req, res) => {
+  const spotId = req.params.id;
+
+  const spotResult = await db.query(
+  'SELECT * FROM spots WHERE id = $1',
+  [spotId]
+);
+const commentsResult = await db.query(
+  `SELECT c.content AS text,
+            c.created_at AS time,
+            u.username
+     FROM comments c
+     JOIN users u ON c.user_id = u.id
+     WHERE c.spot_id = $1
+     ORDER BY c.created_at DESC`,
+    [spotId]
+);
+
+const spot = spotResult.rows[0];
+const comments = commentsResult.rows;
+  res.render('pages/forums', {
+    id: spot.id,
+    name: spot.name,
+    description: spot.description,
+    comments: comments,
+    user: req.session.user
+  });
+});
+app.post('/addComment',async(req,res)=>{
+  const {comment,spotId} = req.body;
+  const userId = req.session.user.id;
+  try{
+    const addComment = await db.query(
+      'Insert into comments(spot_id,content,user_id) Values($1,$2,$3)',
+      [spotId,comment,userId]
+    );
+    res.redirect(`/spots/${spotId}`);
+  }catch(error){
+   console.log("Error in posting commments",error);
+  }
+
+})

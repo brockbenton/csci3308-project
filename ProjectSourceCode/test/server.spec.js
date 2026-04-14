@@ -1,10 +1,13 @@
 const chai = require('chai');
 const chaiHttp = require('chai-http');
+const bcrypt = require('bcryptjs');
+const { Pool } = require('pg');
 const app = require('../src/index');
 const expect = chai.expect;
 const { Pool } = require('pg');
 
-//define db issue fix
+chai.use(chaiHttp);
+
 const db = new Pool({
   host: process.env.PGHOST || 'db',
   port: process.env.PGPORT || 5432,
@@ -12,8 +15,6 @@ const db = new Pool({
   user: process.env.POSTGRES_USER,
   password: process.env.POSTGRES_PASSWORD,
 });
-
-chai.use(chaiHttp);
 
 describe('Spots API', () => {
   it('GET /api/spots should return an object with a spots array', done => {

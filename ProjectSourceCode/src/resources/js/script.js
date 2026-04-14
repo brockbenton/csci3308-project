@@ -15,6 +15,16 @@ if (document.getElementById('map')) {
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
   }).addTo(map);
 
+  map.addControl(new L.Control.Search({
+    url: 'https://nominatim.openstreetmap.org/search?format=json&q={s}',
+    jsonpParam: 'json_callback',
+    propertyName: 'display_name',
+    propertyLoc: ['lat', 'lon'],
+    autoCollapse: true,
+    autoType: false,
+    minLength: 1,
+  }));
+
   let markers = [];
   let pendingMarker = null;
   let addingSpot = false;
@@ -42,17 +52,61 @@ if (document.getElementById('map')) {
       .then(res => res.json())
       .then(data => {
         data.spots.forEach(spot => {
+          let mediaHtml = '';
+          if (spot.media_filename) {
+            const url = spot.media_filename;
+            mediaHtml = '<img src="' + url + '" class="spot-popup-img" style="width:100%;margin-top:6px;display:block;cursor:pointer;" title="Click to expand">';
+          }
+          let deleteHtml = '';
+          if (window.CURRENT_USER_ID && window.CURRENT_USER_ID === spot.created_by) {
+            deleteHtml = '<button class="btn btn-danger btn-sm mt-2 w-100 delete-spot-btn" data-id="' + spot.id + '">Delete</button>';
+          }
           const marker = L.marker([spot.latitude, spot.longitude], { icon: createIcon(spot.sport_type) })
             .bindPopup(
-              '<strong>' + spot.name + '</strong><br>' +
-              '<em>' + spot.sport_type + ' &bull; ' + spot.difficulty + '</em>' +
-              (spot.description ? '<br>' + spot.description : '')
+              `
+  <div class="card p-3" style="width:300px;">
+    <h5 class="text-center">Forums</h5>
+    <p><strong>${spot.name}</strong></p>
+    <p>${spot.description || ''}</p>
+    ${mediaHtml}
+    <a href="/spots/${spot.id}" class="btn btn-sm btn-primary w-100 text-white">
+      Open Forum
+    </a>
+    ${deleteHtml}
+  </div>
+`
             )
             .addTo(map);
           markers.push(marker);
         });
       });
   }
+
+  // Lightbox for popup images
+  const lightbox = document.createElement('div');
+  lightbox.id = 'lightbox';
+  lightbox.innerHTML = '<img id="lightbox-img">';
+  document.body.appendChild(lightbox);
+  lightbox.addEventListener('click', function () {
+    lightbox.style.display = 'none';
+  });
+
+  document.getElementById('map').addEventListener('click', function (e) {
+    if (e.target.classList.contains('delete-spot-btn')) {
+      const id = e.target.getAttribute('data-id');
+      if (!confirm('Delete this spot?')) return;
+      fetch('/api/spots/' + id, { method: 'DELETE' })
+        .then(res => res.json())
+        .then(result => {
+          if (result.error) { alert(result.error); return; }
+          loadSpots(document.getElementById('sport-filter').value);
+        });
+    }
+    if (e.target.classList.contains('spot-popup-img')) {
+      document.getElementById('lightbox-img').src = e.target.src;
+      lightbox.style.display = 'flex';
+    }
+  });
 
   loadSpots('all');
 
@@ -134,12 +188,10 @@ if (document.getElementById('map')) {
 
     spotForm.addEventListener('submit', function (e) {
       e.preventDefault();
-      const data = Object.fromEntries(new FormData(spotForm));
 
       fetch('/api/spots', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
+        body: new FormData(spotForm),
       })
         .then(res => res.json())
         .then(result => {
