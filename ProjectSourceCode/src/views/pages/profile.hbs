@@ -1,0 +1,18 @@
+<h1>Your Profile</h1>
+
+<div style="display: flex; flex-direction: column; gap: 10px;"></div>
+
+<img src="{{user.profile_pic}}" alt="Profile Picture"
+    style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover;" />
+
+//recent activity by user
+<h2>{{user.username}}'s Recent Activity:</h2>
+
+{{#each spots}}
+<div>
+    <p>{{this.name}}</p>
+</div>
+{{/each}}
+</div>
+
+//change pfp wip

@@ -184,6 +184,40 @@ app.get('/welcome', (_req, res) => {
 app.listen(PORT, () => {
   console.log(`SpotDrop running on port ${PORT}`);
 });
+// profile page routes
+
+app.get('/profile', async (req, res) => {
+  if (!req.session.user) {
+    return res.redirect('/login');
+  }
+
+  try {
+    const result = await db.query(
+      'SELECT id, username, profile_pic FROM users WHERE id = $1',
+      [req.session.user.id]
+    );
+
+    const user = result.rows[0];
+
+    res.render('pages/profile', {
+      user
+    });
+
+  } catch (err) {
+    console.error(err);
+    res.redirect('/');
+  }
+
+  //render spots
+  const spots = await db.query('SELECT * FROM spots WHERE created_by = $1 ORDER BY created_at DESC',
+    [req.session.user.id]);
+
+    res.render('/profile', {
+      user, 
+      spots: spots.rows
+    });
+
+});
 
 module.exports = app;
 // rendiering the forum page Akhil
@@ -192,11 +226,11 @@ app.get('/spots/:id', async (req, res) => {
   const spotId = req.params.id;
 
   const spotResult = await db.query(
-  'SELECT * FROM spots WHERE id = $1',
-  [spotId]
-);
-const commentsResult = await db.query(
-  `SELECT c.content AS text,
+    'SELECT * FROM spots WHERE id = $1',
+    [spotId]
+  );
+  const commentsResult = await db.query(
+    `SELECT c.content AS text,
             c.created_at AS time,
             u.username
      FROM comments c
@@ -204,10 +238,10 @@ const commentsResult = await db.query(
      WHERE c.spot_id = $1
      ORDER BY c.created_at DESC`,
     [spotId]
-);
+  );
 
-const spot = spotResult.rows[0];
-const comments = commentsResult.rows;
+  const spot = spotResult.rows[0];
+  const comments = commentsResult.rows;
   res.render('pages/forums', {
     id: spot.id,
     name: spot.name,
@@ -216,17 +250,17 @@ const comments = commentsResult.rows;
     user: req.session.user
   });
 });
-app.post('/addComment',async(req,res)=>{
-  const {comment,spotId} = req.body;
+app.post('/addComment', async (req, res) => {
+  const { comment, spotId } = req.body;
   const userId = req.session.user.id;
-  try{
+  try {
     const addComment = await db.query(
       'Insert into comments(spot_id,content,user_id) Values($1,$2,$3)',
-      [spotId,comment,userId]
+      [spotId, comment, userId]
     );
     res.redirect(`/spots/${spotId}`);
-  }catch(error){
-   console.log("Error in posting commments",error);
+  } catch (error) {
+    console.log("Error in posting commments", error);
   }
 
 })
