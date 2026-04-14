@@ -1,6 +1,6 @@
 
 <div class="d-flex justify-content-center align-items-center" style="min-height: 80vh;">
-  <div class="card p-4" style="width: 360px;">
+  <div class="card p-4" style="width: 480px;">
     <h4 class="mb-3 text-center">Forums</h4>
 
     {{#if message}}
@@ -20,14 +20,15 @@
     <button type="submit" class="btn btn-primary w-100">Add Comment</button>
 </form>
 {{/if}}
-
-<p>Comments:</p>
+<br>
+<p class="mb-1">Comments:</p>
 <div class="container">
 {{#each comments}}
     <div class="row">
-        <div class="card">
-            <h6 class="card-subtitle mb-2 text-muted">{{username}} </h6>
-            <p class="card-text"> {{time}}:{{text}}</p>
+        <div class="card mb-1">
+            <h6 class="mt-1"><b>{{username}}</b></h6>
+            <p class="card-subtitle mb-2 text-muted" style="font-size: 0.7rem;">{{time}}</p>
+            <p class="card-text mb-1">{{text}}</p>
         </div>
     </div>
 {{/each}}
@@ -35,3 +36,5 @@
 
 </div>
 </div>
+
+<!-- class="card-subtitle mb-2 text-muted" style="font-size: 0.7rem;" -->
