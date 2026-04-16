@@ -1,12 +1,29 @@
 <nav class="navbar navbar-dark bg-dark px-3">
-  <a class="navbar-brand fw-bold" href="/">SpotDrop</a>
+  <a class="navbar-brand fw-bold" href="/">
+    <img src="../../resources/UI/Spot Drop Logo Horizontal Outline.svg" alt="Logo" height = "30">
+  </a>
   <div class="d-flex gap-2">
     {{#if user}}
-      <span class="navbar-text me-2">{{user.username}}</span>
-      <a href="/logout" class="btn btn-outline-light btn-sm">Log Out</a>
+      
+      {{!-- Expanded Navbar funciton-- Owned by Sam Kasten --}}
+      <div class="dropdown">
+        <button class="btn btn-sm dropdown-toggle btn-outline-light" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          {{user.username}}
+        </button>
+        <div class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
+          <a class="dropdown-item" href="/account">Account</a>
+          <a class="dropdown-item" href="/settings">Settings</a>
+          <a class="dropdown-item" href="/logout">Logout</a>
+        </div>
+      </div>
+
+      <a href="/about" class="btn btn-light btn btn-sm">About</a>
+
+
+
     {{else}}
-      <a href="/login" class="btn btn-outline-light btn-sm">Log In</a>
-      <a href="/register" class="btn btn-light btn-sm">Sign Up</a>
+      <a href="/login" class="btn btn-outline-light btn btn-sm">Log In</a>
+      <a href="/about" class="btn btn-light btn btn-sm">About</a>
     {{/if}}
   </div>
 </nav>
