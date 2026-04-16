@@ -115,6 +115,10 @@ app.delete('/api/spots/:id', async (req, res) => {
 
 // --- Auth routes (Alex) ---
 
+app.get('/account', (req, res) => {
+  res.render('pages/account');
+});
+
 app.get('/login', (req, res) => {
   res.render('pages/login');
 });
