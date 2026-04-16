@@ -125,14 +125,14 @@ app.get('/login', (req, res) => {
 
 app.post('/login', async (req, res) => {
   // TODO: Alex implements login logic
-  const {email, username, password } = req.body;
+  const { username, password } = req.body;
 
   try {
-    const result = await db.query('SELECT * FROM users WHERE username = $2', [username]);
-    const user = result.rows[1];
+    const result = await db.query('SELECT * FROM users WHERE username = $1', [username]);
+    const user = result.rows[0];
 
 
-    if (!user || !email) {
+    if (!user) {
       return res.render('pages/login', { message: "Email or username not found. Please register before logging in." });
     }
 
@@ -171,7 +171,7 @@ app.post('/register', async (req, res) => {
 
   try {
     const hash = await bcrypt.hash(password, 10);
-    await db.query('INSERT INTO users(email, username, password) VALUES($1, $2, $3)', [username, hash]);
+    await db.query('INSERT INTO users(email, username, password) VALUES($1, $2, $3)', [email, username, hash]);
     res.redirect('/login');
   } catch (error) {
     if (error.code === '23505') {
