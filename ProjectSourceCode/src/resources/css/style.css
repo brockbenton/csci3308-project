@@ -3,6 +3,11 @@ body {
   flex-direction: column;
   height: 100vh;
   overflow: hidden;
+
+  font-family: 'futura-pt-bold', sans-serif;
+  font-weight: 600;
+  font-style: normal;
+  font-size: larger;
 }
 
 main {
@@ -80,4 +85,19 @@ main {
   border-radius: 50%;
   border: 2px solid white;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+}
+
+#add-spot-btn{
+  background:#ff0000;
+}
+
+.btn-warning {
+  color: #ffffff !important;
+}
+
+.leaflet-popup-close-button {
+  font-size: 1.5rem !important;
+  width: 1.8rem !important;
+  height: 1.8rem !important;
+  line-height: 1.8rem !important;
 }

@@ -230,3 +230,12 @@ app.post('/addComment',async(req,res)=>{
   }
 
 })
+
+// About Page WIP -- Sam 
+app.get('/about', (req, res) => {
+  res.render('pages/about', { user: req.session.user });
+});
+
+app.post('/about', async (req, res) => {
+  const { username, password } = req.body;
+});
