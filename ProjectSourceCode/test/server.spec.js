@@ -112,17 +112,26 @@ describe('POST /api/spots (authenticated)', () => {
 // register tests
 describe('Register API tests', () => {
   const user_test = {
+    email: 'register_test_email',
     username: 'register_test_user',
     password: 'pass_test',
 
   };
 
   before(async () => {
-    await db.query('DELETE FROM users WHERE username = $1', [user_test.username]);
+    await db.query('DELETE FROM users WHERE email = $1', [user_test.email]);
   });
 
   after(async () => {
-    await db.query('DELETE FROM users WHERE username = $1', [user_test.username]);
+    await db.query('DELETE FROM users WHERE email = $1', [user_test.email]);
+  });
+
+  before(async () => {
+    await db.query('DELETE FROM users WHERE username = $2', [user_test.username]);
+  });
+
+  after(async () => {
+    await db.query('DELETE FROM users WHERE username = $2', [user_test.username]);
   });
 
   it('Positive: POST /register should create a user and redirect', async () => {
@@ -132,10 +141,10 @@ describe('Register API tests', () => {
       .send(user_test)
 
     expect(res).to.have.status(302);
-    const result = await db.query('SELECT * FROM users WHERE username = $1',
+    const result = await db.query('SELECT * FROM users WHERE username = $2',
       [user_test.username]);
-    expect(result.rows.length).to.equal(1);
-    expect(result.rows[0].username).to.equal(user_test.username);
+    expect(result.rows.length).to.equal(2);
+    expect(result.rows[1].username).to.equal(user_test.username);
   });
 });
 it('Negative: POST /register with missing fields should return 400', done => {

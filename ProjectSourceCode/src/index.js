@@ -125,15 +125,15 @@ app.get('/login', (req, res) => {
 
 app.post('/login', async (req, res) => {
   // TODO: Alex implements login logic
-  const { username, password } = req.body;
+  const {email, username, password } = req.body;
 
   try {
-    const result = await db.query('SELECT * FROM users WHERE username = $1', [username]);
-    const user = result.rows[0];
+    const result = await db.query('SELECT * FROM users WHERE username = $2', [username]);
+    const user = result.rows[1];
 
 
-    if (!user) {
-      return res.render('pages/login', { message: "Username not found. Please register before logging in." });
+    if (!user || !email) {
+      return res.render('pages/login', { message: "Email or username not found. Please register before logging in." });
     }
 
     const match = await bcrypt.compare(password, user.password);
@@ -157,19 +157,25 @@ app.get('/register', (req, res) => {
 });
 
 app.post('/register', async (req, res) => {
-  const { username, password } = req.body;
-
-  if (!username || !password) {
-    return res.status(400).json({ message: 'Invalid input' });
+  const {email, username, password } = req.body;
+  //helps fix test error
+  if (!username || !password || !email) {
+    return res.status(400).json({
+      message: 'Invalid input'
+    });
   }
+ // see if we even need this because of above code (dont think so)
+  // if (!username || !password) {
+  //   return res.status(400).json({ message: 'Invalid input' });
+  // }
 
   try {
     const hash = await bcrypt.hash(password, 10);
-    await db.query('INSERT INTO users(username, password) VALUES($1, $2)', [username, hash]);
+    await db.query('INSERT INTO users(email, username, password) VALUES($1, $2, $3)', [username, hash]);
     res.redirect('/login');
   } catch (error) {
     if (error.code === '23505') {
-      return res.render('pages/register', { message: 'Username already taken.' });
+      return res.render('pages/register', { message: 'Email or username already taken.' });
     }
     console.error(error);
     res.redirect('/register');
