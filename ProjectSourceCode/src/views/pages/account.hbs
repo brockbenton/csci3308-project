@@ -1,0 +1,39 @@
+{{! Account page - owned by Alex }}
+
+<div class="account" style="display: flex; flex-direction: column; align-items: center; text-align: center; margin: 25px auto; max-width: 800px; font-family: sans-serif;">
+
+    <div class="account-header">
+        <img src="{{user.profile_pic}}" class="profile-pic" style="width: 170px; height: 170px; object-fit: cover; border-radius: 50%; border: 3px solid black; margin-bottom: 15px;">
+        <h1>{{user.username}}</h1>
+        <p>{{user.email}}</p>
+    </div>
+
+    <div class="info" style="display: flex; gap: 40px; justify-content: center; margin: 20px 0; padding-bottom: 20px; ">
+        <div>
+            <h3>{{spots.length}}</h3>
+            <p>Spots</p>
+        </div>
+        <div>
+            <h3>{{comments.length}}</h3>
+            <p>Comments</p>
+        </div>
+    </div>
+</div>
+
+<div class="recent-activity" style="display: flex; flex-direction: column; align-items: center; width: 100%; max-width: 800px; margin: 0 auto;">
+    <h2>-- {{user.username}}'s Recent Activity --</h2>
+
+    {{#each spots}}
+    <div class="activity" style="width: 100%; padding: 10px; 1px solid #eee; text-align: center;">
+        <p> Created spot: <b>{{this.name}}</b></p>
+        <small> {{this.created_at}}</small>
+    </div>
+    {{/each}}
+
+    {{#each comments}}
+    <div class="activity" style="width: 100%; padding: 10px;  1px solid #eee; text-align: center;">
+        <p> Commented: <b>{{this.content}} on spot {{this.spot.name}}</b></p>
+        <small> {{this.created_at}}</small>
+    </div>
+    {{/each}}
+</div>
