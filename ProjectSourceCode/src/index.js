@@ -115,8 +115,23 @@ app.delete('/api/spots/:id', async (req, res) => {
 
 // --- Auth routes (Alex) ---
 
-app.get('/account', (req, res) => {
-  res.render('pages/account');
+app.get('/account', async (req, res) => {
+  try {
+    const user_id = req.session.user.id;
+
+    const user_result = await db.query('SELECT * FROM users WHERE id = $1', [user_id]);
+    const spots_result = await db.query('SELECT * FROM spots WHERE created_by = $1 ORDER BY created_at DESC', [user_id]);
+    const comments_result = await db.query('SELECT * FROM comments WHERE user_id = $1 ORDER BY created_at DESC', [user_id]);
+
+    res.render('pages/account', {
+      user: user_result.rows[0],
+      spots: spots_result.rows,
+      comments: comments_result.rows
+    });
+  } catch(err)
+  {
+    console.error("Error loading account page:", err);
+  }
 });
 
 app.get('/login', (req, res) => {
@@ -157,17 +172,13 @@ app.get('/register', (req, res) => {
 });
 
 app.post('/register', async (req, res) => {
-  const {email, username, password } = req.body;
+  const { email, username, password } = req.body;
   //helps fix test error
   if (!username || !password || !email) {
     return res.status(400).json({
       message: 'Invalid input'
     });
   }
- // see if we even need this because of above code (dont think so)
-  // if (!username || !password) {
-  //   return res.status(400).json({ message: 'Invalid input' });
-  // }
 
   try {
     const hash = await bcrypt.hash(password, 10);
@@ -202,11 +213,11 @@ app.get('/spots/:id', async (req, res) => {
   const spotId = req.params.id;
 
   const spotResult = await db.query(
-  'SELECT * FROM spots WHERE id = $1',
-  [spotId]
-);
-const commentsResult = await db.query(
-  `SELECT c.content AS text,
+    'SELECT * FROM spots WHERE id = $1',
+    [spotId]
+  );
+  const commentsResult = await db.query(
+    `SELECT c.content AS text,
             c.created_at AS time,
             u.username
      FROM comments c
@@ -214,10 +225,10 @@ const commentsResult = await db.query(
      WHERE c.spot_id = $1
      ORDER BY c.created_at DESC`,
     [spotId]
-);
+  );
 
-const spot = spotResult.rows[0];
-const comments = commentsResult.rows;
+  const spot = spotResult.rows[0];
+  const comments = commentsResult.rows;
   res.render('pages/forums', {
     id: spot.id,
     name: spot.name,
@@ -226,17 +237,17 @@ const comments = commentsResult.rows;
     user: req.session.user
   });
 });
-app.post('/addComment',async(req,res)=>{
-  const {comment,spotId} = req.body;
+app.post('/addComment', async (req, res) => {
+  const { comment, spotId } = req.body;
   const userId = req.session.user.id;
-  try{
+  try {
     const addComment = await db.query(
       'Insert into comments(spot_id,content,user_id) Values($1,$2,$3)',
-      [spotId,comment,userId]
+      [spotId, comment, userId]
     );
     res.redirect(`/spots/${spotId}`);
-  }catch(error){
-   console.log("Error in posting commments",error);
+  } catch (error) {
+    console.log("Error in posting commments", error);
   }
 
 })
