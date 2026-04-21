@@ -233,6 +233,7 @@ app.get('/spots/:id', async (req, res) => {
     id: spot.id,
     name: spot.name,
     description: spot.description,
+    media_filename: spot.media_filename,
     comments: comments,
     user: req.session.user
   });

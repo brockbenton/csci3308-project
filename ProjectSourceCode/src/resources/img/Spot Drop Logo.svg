@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1419.05 853.53">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: red;
+        stroke-width: 20px;
+      }
+
+      .cls-1, .cls-2, .cls-3 {
+        stroke: #000;
+        stroke-miterlimit: 10;
+      }
+
+      .cls-4 {
+        letter-spacing: 0em;
+      }
+
+      .cls-5 {
+        letter-spacing: .03em;
+      }
+
+      .cls-6 {
+        font-family: FuturaPT-ExtraBoldObl, 'Futura PT';
+        font-size: 357px;
+        font-style: oblique;
+        font-weight: 700;
+      }
+
+      .cls-2, .cls-3 {
+        stroke-width: 21px;
+      }
+
+      .cls-3 {
+        fill: #fff;
+      }
+    </style>
+  </defs>
+  <text class="cls-6" transform="translate(128.19 394.29)"><tspan x="0" y="0">Spot</tspan><tspan x="0" y="322">D</tspan><tspan class="cls-5" x="265.6" y="322">r</tspan><tspan class="cls-4" x="431.6" y="322">op</tspan></text>
+  <circle class="cls-1" cx="1140.78" cy="212.43" r="150.08"/>
+  <ellipse class="cls-2" cx="1140.78" cy="743.93" rx="106.85" ry="10.21"/>
+  <rect class="cls-3" x="1119.15" y="364.57" width="43.24" height="379.37"/>
+</svg>
