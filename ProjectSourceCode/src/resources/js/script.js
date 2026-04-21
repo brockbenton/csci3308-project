@@ -55,7 +55,7 @@ if (document.getElementById('map')) {
           let mediaHtml = '';
           if (spot.media_filename) {
             const url = spot.media_filename;
-            mediaHtml = '<img src="' + url + '" class="spot-popup-img" style="width:100%;margin-top:6px;display:block;cursor:pointer;" title="Click to expand">';
+            mediaHtml = '<img src="' + url + '" class="spot-popup-img img-fluid rounded" style="width:100%;margin-top:6px;display:block;cursor:pointer;" title="Click to expand">';
           }
           let deleteHtml = '';
           if (window.CURRENT_USER_ID && window.CURRENT_USER_ID === spot.created_by) {
@@ -65,10 +65,11 @@ if (document.getElementById('map')) {
             .bindPopup(
               `
   <div class="card p-3" style="width:300px;">
-    <h5 class="text-center">Forums</h5>
-    <p><strong>${spot.name}</strong></p>
-    <p>${spot.description || ''}</p>
+    <h5 class="text-center">
+      <strong>${spot.name}</strong>
+    </h5>
     ${mediaHtml}
+    <p>Spot Details: ${spot.description || ''}</p>
     <a href="/spots/${spot.id}" class="btn btn-sm btn-primary w-100 text-white">
       Open Forum
     </a>
