@@ -115,6 +115,25 @@ app.delete('/api/spots/:id', async (req, res) => {
 
 // --- Auth routes (Alex) ---
 
+app.get('/account', async (req, res) => {
+  try {
+    const user_id = req.session.user.id;
+
+    const user_result = await db.query('SELECT * FROM users WHERE id = $1', [user_id]);
+    const spots_result = await db.query('SELECT * FROM spots WHERE created_by = $1 ORDER BY created_at DESC', [user_id]);
+    const comments_result = await db.query('SELECT * FROM comments WHERE user_id = $1 ORDER BY created_at DESC', [user_id]);
+
+    res.render('pages/account', {
+      user: user_result.rows[0],
+      spots: spots_result.rows,
+      comments: comments_result.rows
+    });
+  } catch(err)
+  {
+    console.error("Error loading account page:", err);
+  }
+});
+
 app.get('/login', (req, res) => {
   res.render('pages/login');
 });
@@ -129,7 +148,7 @@ app.post('/login', async (req, res) => {
 
 
     if (!user) {
-      return res.render('pages/login', { message: "Username not found. Please register before logging in." });
+      return res.render('pages/login', { message: "Email or username not found. Please register before logging in." });
     }
 
     const match = await bcrypt.compare(password, user.password);
@@ -153,19 +172,21 @@ app.get('/register', (req, res) => {
 });
 
 app.post('/register', async (req, res) => {
-  const { username, password } = req.body;
-
-  if (!username || !password) {
-    return res.status(400).json({ message: 'Invalid input' });
+  const { email, username, password } = req.body;
+  //helps fix test error
+  if (!username || !password || !email) {
+    return res.status(400).json({
+      message: 'Invalid input'
+    });
   }
 
   try {
     const hash = await bcrypt.hash(password, 10);
-    await db.query('INSERT INTO users(username, password) VALUES($1, $2)', [username, hash]);
+    await db.query('INSERT INTO users(email, username, password) VALUES($1, $2, $3)', [email, username, hash]);
     res.redirect('/login');
   } catch (error) {
     if (error.code === '23505') {
-      return res.render('pages/register', { message: 'Username already taken.' });
+      return res.render('pages/register', { message: 'Email or username already taken.' });
     }
     console.error(error);
     res.redirect('/register');
@@ -206,32 +227,34 @@ const commentsResult = await db.query(
    WHERE c.spot_id = $1
    ORDER BY c.created_at DESC`,
     [spotId]
-);
+  );
 
-const spot = spotResult.rows[0];
-const comments = commentsResult.rows;
+  const spot = spotResult.rows[0];
+  const comments = commentsResult.rows;
   res.render('pages/forums', {
     id: spot.id,
     name: spot.name,
     description: spot.description,
+    media_filename: spot.media_filename,
     comments: comments,
     user: req.session.user
   });
 });
-app.post('/addComment',async(req,res)=>{
-  const {comment,spotId} = req.body;
+app.post('/addComment', async (req, res) => {
+  const { comment, spotId } = req.body;
   const userId = req.session.user.id;
-  try{
+  try {
     const addComment = await db.query(
       'Insert into comments(spot_id,content,user_id) Values($1,$2,$3)',
-      [spotId,comment,userId]
+      [spotId, comment, userId]
     );
     res.redirect(`/spots/${spotId}`);
-  }catch(error){
-   console.log("Error in posting commments",error);
+  } catch (error) {
+    console.log("Error in posting commments", error);
   }
 
 })
+
 app.delete('/delete/:id', async (req, res) => {
   const commentId = req.params.id;
   const userId = req.session.user.id; 
@@ -251,4 +274,14 @@ app.delete('/delete/:id', async (req, res) => {
     console.log("Error deleting comment:", error);
     res.status(500).json({ error: 'Server error' });
   }
+});
+
+// About Page WIP -- Sam 
+app.get('/about', (req, res) => {
+  res.render('pages/about', { user: req.session.user });
+});
+
+app.post('/about', async (req, res) => {
+  const { username, password } = req.body;
+
 });

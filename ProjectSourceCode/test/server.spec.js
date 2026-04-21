@@ -54,6 +54,7 @@ describe('Spots API', () => {
 describe('POST /api/spots (authenticated)', () => {
   let agent;
   const testUser = {
+    email: 'spot_test@testemail.com',
     username: 'spottest_user',
     password: 'testpass123',
   };
@@ -61,7 +62,8 @@ describe('POST /api/spots (authenticated)', () => {
   before(async () => {
     await db.query('DELETE FROM users WHERE username = $1', [testUser.username]);
     const hash = await bcrypt.hash(testUser.password, 10);
-    await db.query('INSERT INTO users (username, password) VALUES ($1, $2)', [
+    await db.query('INSERT INTO users (email, username, password) VALUES ($1, $2, $3)', [
+      'spot_test@testemail.com',
       testUser.username,
       hash,
     ]);
@@ -107,4 +109,47 @@ describe('POST /api/spots (authenticated)', () => {
     expect(res).to.have.status(500);
     expect(res.body).to.have.property('error', 'Failed to add spot');
   });
+});
+
+// register tests
+describe('Register API tests', () => {
+  const user_test = {
+    email: 'register_test_email',
+    username: 'register_test_user',
+    password: 'pass_test',
+
+  };
+
+  before(async () => {
+    await db.query('DELETE FROM users WHERE username = $1', [user_test.username]);
+    await db.query('DELETE FROM users WHERE email = $1', [user_test.email]);
+  });
+
+  after(async () => {
+    await db.query('DELETE FROM users WHERE username = $1', [user_test.username]);
+    await db.query('DELETE FROM users WHERE email = $1', [user_test.email]);
+  });
+
+  it('Positive: POST /register should create a user and redirect', async () => {
+    const res = await chai.request(app)
+      .post('/register')
+      .redirects(0)
+      .send(user_test)
+
+    expect(res).to.have.status(302);
+    const result = await db.query('SELECT * FROM users WHERE username = $1',
+      [user_test.username]);
+    expect(result.rows.length).to.equal(1);
+    expect(result.rows[0].username).to.equal(user_test.username);
+  });
+});
+it('Negative: POST /register with missing fields should return 400', done => {
+  chai.request(app)
+    .post('/register')
+    .send({ username: 'only_user' })
+    .end((err, res) => {
+      expect(res).to.have.status(400);
+      expect(res.body.message).to.equal('Invalid input');
+      done();
+    });
 });
