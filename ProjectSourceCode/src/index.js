@@ -144,7 +144,7 @@ app.post('/update_profile_pic', async (req, res) => {
     await db.query('UPDATE users SET profile_pic = $1 WHERE id = $2', [selected_picture, user_id]);
     res.redirect('/account');
   } catch (err) {
-    console.error("Error uploading profile picture", err);
+    console.error("Error changing profile picture", err);
   }
 });
 

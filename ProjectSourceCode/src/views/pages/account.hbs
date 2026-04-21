@@ -4,13 +4,13 @@
     style="display: flex; flex-direction: column; align-items: center; text-align: center; margin: 25px auto; max-width: 800px; font-family: sans-serif;">
 
     <div class="account-header">
-        <img src="{{user.profile_pic}}" class="profile-pic"
+        <img src="../../resources/img/{{user.profile_pic}}" class="profile-pic"
             style="width: 170px; height: 170px; object-fit: cover; border-radius: 50%; border: 3px solid black; margin-bottom: 15px;">
         <h1>{{user.username}}</h1>
         <p>{{user.email}}</p>
     </div>
 
-    <div style="margin-top: 20px; padding: 15px; border: 1px solid #ddd; border-radius: 10px; background: #f9f9f9;">
+    <div style="margin-top: 20px; padding: 15px; border-radius: 10px; ">
         <p style="margin-bottom: 10px; font-weight: bold; font-size: 0.9rem;">Change Profile Color</p>
         <form action="/update_profile_pic" method="POST">
             <div style="display: flex; gap: 10px; justify-content: center; margin-bottom: 15px;">
@@ -18,27 +18,27 @@
                 {{!-- default --}}
                 <label>
                     <input type="radio" name="profile_choice" value="default_profile.jpg" style="display:none" required>
-                    <img src="../../resources/UI/default_profile.jpg" class="choice-img" onlick="highlight(this)">
+                    <img src="../../resources/img/default_profile.jpg" class="choice-img" onclick="highlight(this)" style="width: 120px; height: 120px; object-fit: cover; border-radius: 50%; border: 3px solid black; margin-bottom: 15px;">
                 </label>
                 {{!-- blue --}}
                 <label>
                     <input type="radio" name="profile_choice" value="blue_profile.jpg" style="display:none">
-                    <img src="../../resources/UI/blue_profile.jpg" class="choice-img" onlick="highlight(this)">
+                    <img src="../../resources/img/blue_profile.jpg" class="choice-img" onclick="highlight(this)" style="width: 120px; height: 120px; object-fit: cover; border-radius: 50%; border: 3px solid black; margin-bottom: 15px;">
                 </label>
                 {{!-- green --}}
                 <label>
                     <input type="radio" name="profile_choice" value="green_profile.jpg" style="display:none">
-                    <img src="../../resources/UI/green_profile.jpg" class="choice-img" onlick="highlight(this)">
+                    <img src="../../resources/img/green_profile.jpg" class="choice-img" onclick="highlight(this)" style="width: 120px; height: 120px; object-fit: cover; border-radius: 50%; border: 3px solid black; margin-bottom: 15px;">
                 </label>
                 {{!-- yellow --}}
                 <label>
                     <input type="radio" name="profile_choice" value="yellow_profile.jpg" style="display:none">
-                    <img src="../../resources/UI/yellow_profile.jpg" class="choice-img" onlick="highlight(this)">
+                    <img src="../../resources/img/yellow_profile.jpg" class="choice-img" onclick="highlight(this)" style="width: 120px; height: 120px; object-fit: cover; border-radius: 50%; border: 3px solid black; margin-bottom: 15px;">
                 </label>
                 {{!-- red --}}
                 <label>
                     <input type="radio" name="profile_choice" value="red_profile.jpg" style="display:none">
-                    <img src="../../resources/UI/red_profile.jpg" class="choice-img" onlick="highlight(this)">
+                    <img src="../../resources/img/red_profile.jpg" class="choice-img" onclick="highlight(this)" style="width: 120px; height: 120px; object-fit: cover; border-radius: 50%; border: 3px solid black; margin-bottom: 15px;">
                 </label>
 
             </div>
