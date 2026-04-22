@@ -101,3 +101,31 @@ main {
   height: 1.8rem !important;
   line-height: 1.8rem !important;
 }
+
+.delete-comment-btn {
+  background: #CC0000;
+  color: #ffffff;
+  width: 5rem;
+  height: 2rem;
+  margin-left: auto;
+  align-self: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  transition: background 150ms;
+}
+.delete-comment-btn:hover {
+  background: #9c0000;
+}
+
+.about-img {
+  display: block;
+  margin-left: auto;
+  width: 25rem;
+}
+
+.para-text {
+  color: rgb(91, 91, 91);
+}
+
