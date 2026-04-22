@@ -213,17 +213,19 @@ app.get('/spots/:id', async (req, res) => {
   const spotId = req.params.id;
 
   const spotResult = await db.query(
-    'SELECT * FROM spots WHERE id = $1',
-    [spotId]
-  );
-  const commentsResult = await db.query(
-    `SELECT c.content AS text,
-            c.created_at AS time,
-            u.username
-     FROM comments c
-     JOIN users u ON c.user_id = u.id
-     WHERE c.spot_id = $1
-     ORDER BY c.created_at DESC`,
+  'SELECT * FROM spots WHERE id = $1',
+  [spotId]
+);
+const commentsResult = await db.query(
+  `SELECT c.id,
+          c.content AS text,
+          c.created_at AS time,
+          c.user_id,
+          u.username
+   FROM comments c
+   JOIN users u ON c.user_id = u.id
+   WHERE c.spot_id = $1
+   ORDER BY c.created_at DESC`,
     [spotId]
   );
 
@@ -253,6 +255,27 @@ app.post('/addComment', async (req, res) => {
 
 })
 
+app.delete('/delete/:id', async (req, res) => {
+  const commentId = req.params.id;
+  const userId = req.session.user.id; 
+
+  try {
+    const result = await db.query(
+      'DELETE FROM comments WHERE id = $1 AND user_id = $2',
+      [commentId, userId]
+    );
+
+    if (result.rowCount === 0) {
+      return res.status(403).json({ error: 'Not authorized to delete this comment' });
+    }
+
+    res.json({ success: true });
+  } catch (error) {
+    console.log("Error deleting comment:", error);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
 // About Page WIP -- Sam 
 app.get('/about', (req, res) => {
   res.render('pages/about', { user: req.session.user });
@@ -260,4 +283,5 @@ app.get('/about', (req, res) => {
 
 app.post('/about', async (req, res) => {
   const { username, password } = req.body;
+
 });

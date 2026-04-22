@@ -206,3 +206,22 @@ if (document.getElementById('map')) {
     });
   }
 }
+document.addEventListener('click', function (e) {
+  if (e.target.classList.contains('delete-comment-btn')) {
+    const id = e.target.getAttribute('data-id');
+
+    if (!confirm('Delete this comment?')) return;
+
+    fetch('/delete/' + id, {
+      method: 'DELETE'
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data.error) {
+        alert(data.error);
+      } else {
+        location.reload(); 
+      }
+    });
+  }
+});
