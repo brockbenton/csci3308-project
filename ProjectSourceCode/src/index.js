@@ -209,7 +209,7 @@ app.listen(PORT, () => {
   console.log(`SpotDrop running on port ${PORT}`);
 });
 
-module.exports = app;
+
 // rendiering the forum page Akhil
 
 app.get('/spots/:id', async (req, res) => {
@@ -233,7 +233,10 @@ const commentsResult = await db.query(
   );
 
   const spot = spotResult.rows[0];
-  const comments = commentsResult.rows;
+  // const comments = commentsResult.rows;
+  const comments = commentsResult.rows.map(c => {
+  return { ...c, isOwner: req.session.user ? c.username === req.session.user.username : false };
+});
   res.render('pages/forums', {
     id: spot.id,
     name: spot.name,
@@ -261,6 +264,7 @@ app.post('/addComment', async (req, res) => {
 app.delete('/delete/:id', async (req, res) => {
   const commentId = req.params.id;
   const userId = req.session.user.id; 
+  console.log("Session user:", req.session.user);
 
   try {
     const result = await db.query(
@@ -288,3 +292,5 @@ app.post('/about', async (req, res) => {
   const { username, password } = req.body;
 
 });
+
+module.exports = app;

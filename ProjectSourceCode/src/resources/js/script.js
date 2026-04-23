@@ -206,3 +206,21 @@ if (document.getElementById('map')) {
     });
   }
 }
+
+// Comment Delete function added - Sam Kasten
+document.addEventListener('DOMContentLoaded', function () {
+  console.log("Delete buttons found:", document.querySelectorAll('.delete-comment-btn').length);
+  
+  document.querySelectorAll('.delete-comment-btn').forEach(button => {
+    button.addEventListener('click', function () {
+      console.log("Delete button clicked, id:", this.getAttribute('data-id'));
+      const commentId = this.getAttribute('data-id');
+      fetch(`/delete/${commentId}`, { method: 'DELETE' })
+        .then(res => res.json())
+        .then(result => {
+          if (result.error) { alert(result.error); return; }
+          this.closest('.card').remove();
+        });
+    });
+  });
+});

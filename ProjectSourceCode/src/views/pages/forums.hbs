@@ -45,7 +45,8 @@
             {{!-- Sam Kasten Tweaked for UI --}}
             <div class = "d-flex flex-row">
                 <p class="card-text mb-1 p-2">{{text}}</p>
-                {{#if (eq username ../user.username)}}
+                <p>DEBUG: isOwner={{isOwner}}</p>
+                {{#if isOwner}}
                     <button class="delete-comment-btn mb-4 p-2 rounded" data-id="{{id}}">Delete</button>
                 {{/if}}
             </div>
