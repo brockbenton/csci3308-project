@@ -131,9 +131,23 @@ app.get('/account', async (req, res) => {
       spots: spots_result.rows,
       comments: comments_result.rows
     });
-  } catch(err)
-  {
+  } catch (err) {
     console.error("Error loading account page:", err);
+  }
+});
+
+//update profile picture
+
+app.post('/update_profile_pic', async (req, res) => {
+
+  try {
+    const user_id = req.session.user.id;
+    const selected_picture = req.body.profile_choice;
+
+    await db.query('UPDATE users SET profile_pic = $1 WHERE id = $2', [selected_picture, user_id]);
+    res.redirect('/account');
+  } catch (err) {
+    console.error("Error changing profile picture", err);
   }
 });
 
@@ -222,7 +236,7 @@ app.get('/spots/:id', async (req, res) => {
 const commentsResult = await db.query(
   `SELECT c.id,
           c.content AS text,
-          c.created_at AS time,
+          TO_CHAR((c.created_at AT TIME ZONE 'UTC' AT TIME ZONE 'America/Denver'), 'Dy Mon DD YYYY FMHH12:MI:SS AM MTC') AS time,
           c.user_id,
           u.username
    FROM comments c
