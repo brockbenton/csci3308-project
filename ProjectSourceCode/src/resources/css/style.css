@@ -88,7 +88,7 @@ main {
 }
 
 #add-spot-btn{
-  background:#ff0000;
+  background:#0976cf;
 }
 
 .btn-warning {
@@ -127,5 +127,28 @@ main {
 
 .para-text {
   color: rgb(91, 91, 91);
+}
+
+.choice-img:hover {
+  /* border: 3px solid red; */
+  cursor: pointer;
+  opacity: 0.6;
+  transition: 150ms;
+}
+
+.activity_header{
+  font-family: 'futura-pt-bold';
+  font-weight: 10000;
+  font-style: normal;
+  font-size: x-large;
+}
+
+.spot-name{
+  font-style: italic;
+}
+
+.comment-text {
+  margin-left: auto;
+  align-self: center;
 }
 

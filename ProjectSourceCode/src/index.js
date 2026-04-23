@@ -124,7 +124,14 @@ app.get('/account', async (req, res) => {
 
     const user_result = await db.query('SELECT * FROM users WHERE id = $1', [user_id]);
     const spots_result = await db.query('SELECT * FROM spots WHERE created_by = $1 ORDER BY created_at DESC', [user_id]);
-    const comments_result = await db.query('SELECT * FROM comments WHERE user_id = $1 ORDER BY created_at DESC', [user_id]);
+    const comments_result = await db.query(
+      `SELECT comments.*, spots.name AS spot_name
+      FROM comments
+      JOIN spots ON comments.spot_id = spots.id
+      WHERE comments.user_id = $1
+      ORDER BY comments.created_at DESC`,
+      [user_id]
+    );
 
     res.render('pages/account', {
       user: user_result.rows[0],
