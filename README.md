@@ -10,7 +10,7 @@ A community map application for urban athletes to discover, share, and discuss s
 |------|--------|
 | Brock Benton | [@brockbenton](https://github.com/brockbenton) |
 | Sam Kasten | [@killthecreep](https://github.com/killthecreep) |
-| Atharva | - |
+| Atharva | - | [@Joshath25](https://github.com/Joshath25) |
 | Alex | - |
 | Akhil | [@Akhil986](https://github.com/Akhil986) |
 
