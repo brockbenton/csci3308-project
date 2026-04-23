@@ -24,6 +24,9 @@ app.engine('hbs', engine({
   defaultLayout: 'main',
   layoutsDir: path.join(__dirname, 'views/layouts'),
   partialsDir: path.join(__dirname, 'views/partials'),
+  helpers: {
+    eq: (a, b) => a === b
+  }
 }));
 app.set('view engine', 'hbs');
 app.set('views', path.join(__dirname, 'views'));
@@ -121,7 +124,14 @@ app.get('/account', async (req, res) => {
 
     const user_result = await db.query('SELECT * FROM users WHERE id = $1', [user_id]);
     const spots_result = await db.query('SELECT * FROM spots WHERE created_by = $1 ORDER BY created_at DESC', [user_id]);
-    const comments_result = await db.query('SELECT * FROM comments WHERE user_id = $1 ORDER BY created_at DESC', [user_id]);
+    const comments_result = await db.query(
+      `SELECT comments.*, spots.name AS spot_name
+      FROM comments
+      JOIN spots ON comments.spot_id = spots.id
+      WHERE comments.user_id = $1
+      ORDER BY comments.created_at DESC`,
+      [user_id]
+    );
 
     res.render('pages/account', {
       user: user_result.rows[0],
@@ -220,7 +230,7 @@ app.listen(PORT, () => {
   console.log(`SpotDrop running on port ${PORT}`);
 });
 
-module.exports = app;
+
 // rendiering the forum page Akhil
 
 app.get('/spots/:id', async (req, res) => {
@@ -244,7 +254,10 @@ const commentsResult = await db.query(
   );
 
   const spot = spotResult.rows[0];
-  const comments = commentsResult.rows;
+  // const comments = commentsResult.rows;
+  const comments = commentsResult.rows.map(c => {
+  return { ...c, isOwner: req.session.user ? c.username === req.session.user.username : false };
+});
   res.render('pages/forums', {
     id: spot.id,
     name: spot.name,
@@ -272,6 +285,7 @@ app.post('/addComment', async (req, res) => {
 app.delete('/delete/:id', async (req, res) => {
   const commentId = req.params.id;
   const userId = req.session.user.id; 
+  console.log("Session user:", req.session.user);
 
   try {
     const result = await db.query(
@@ -299,3 +313,5 @@ app.post('/about', async (req, res) => {
   const { username, password } = req.body;
 
 });
+
+module.exports = app;

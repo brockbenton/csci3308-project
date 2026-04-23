@@ -2,7 +2,7 @@
 
 <div class="account"
     style="display: flex; flex-direction: column; align-items: center; text-align: center; margin: 25px auto; max-width: 800px; font-family: sans-serif;">
-
+<div class="card p-4 mt-4 mw-100 mb-4" style="width: 900px; max-height: 85vh; overflow-y: auto;">
     <div class="account-header">
         <img src="../../resources/img/{{user.profile_pic}}" class="profile-pic"
             style="width: 170px; height: 170px; object-fit: cover; border-radius: 50%; border: 3px solid black; margin-bottom: 15px;">
@@ -18,7 +18,7 @@
                 {{!-- default --}}
                 <label>
                     <input type="radio" name="profile_choice" value="default_profile.jpg" style="display:none" required>
-                    <img src="../../resources/img/default_profile.jpg" class="choice-img" onclick="highlight(this)" style="width: 120px; height: 120px; object-fit: cover; border-radius: 50%; border: 3px solid black; margin-bottom: 15px;">
+                    <img src="../../resources/img/default_profile.jpg" class="choice-img" onclick="highlight(this)" style="width: 120px; height: 120px; object-fit: cover; border-radius: 50%; border: 3px solid rgb(0, 0, 0); margin-bottom: 15px;">
                 </label>
                 {{!-- blue --}}
                 <label>
@@ -48,6 +48,7 @@
         </form>
     </div>
 
+    <h2 class="activity_header">{{user.username}}'s Recent Activity</h2>
 
     <div class="info" style="display: flex; gap: 40px; justify-content: center; margin: 20px 0; padding-bottom: 20px; ">
         <div>
@@ -59,23 +60,27 @@
             <p>Comments</p>
         </div>
     </div>
+
+
+
+    <div class="recent-activity"
+        style="display: flex; flex-direction: column; align-items: center; width: 100%; max-width: 800px; margin: 0 auto;">
+
+        {{#each spots}}
+        <div class="activity" style="width: 100%; padding: 10px; 1px solid #eee; text-align: center;">
+            <p class="para-text"> Created spot: <b style="color: black;">{{this.name}}</b></p>
+            {{!-- <p class="para-text" style="font-size: 11px;"><x-small> {{this.created_at}}</x-small></p> --}}
+        </div>
+        {{/each}}
+
+        {{#each comments}}
+        <div class="activity" style="width: 100%; padding: 10px;  1px solid #eee; text-align: center;">
+                <p class="para-text"> Commented on <b class ="spot-name">{{this.spot_name}}:</b> </p>
+                <b class="comment-text" style="color: black;">{{this.content}}</b>
+                {{!-- <p class="para-text"><small style="font-size: 11px;"> {{this.created_at}}</small></p> --}}
+
+        </div>
+        {{/each}}
+    </div>
 </div>
-
-<div class="recent-activity"
-    style="display: flex; flex-direction: column; align-items: center; width: 100%; max-width: 800px; margin: 0 auto;">
-    <h2>-- {{user.username}}'s Recent Activity --</h2>
-
-    {{#each spots}}
-    <div class="activity" style="width: 100%; padding: 10px; 1px solid #eee; text-align: center;">
-        <p> Created spot: <b>{{this.name}}</b></p>
-        <small> {{this.created_at}}</small>
-    </div>
-    {{/each}}
-
-    {{#each comments}}
-    <div class="activity" style="width: 100%; padding: 10px;  1px solid #eee; text-align: center;">
-        <p> Commented: <b>{{this.content}} on spot {{this.spot.name}}</b></p>
-        <small> {{this.created_at}}</small>
-    </div>
-    {{/each}}
 </div>

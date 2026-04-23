@@ -88,7 +88,7 @@ main {
 }
 
 #add-spot-btn{
-  background:#ff0000;
+  background:#0976cf;
 }
 
 .btn-warning {
@@ -101,3 +101,54 @@ main {
   height: 1.8rem !important;
   line-height: 1.8rem !important;
 }
+
+.delete-comment-btn {
+  background: #CC0000;
+  color: #ffffff;
+  width: 5rem;
+  height: 2rem;
+  margin-left: auto;
+  align-self: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  transition: background 150ms;
+}
+.delete-comment-btn:hover {
+  background: #9c0000;
+}
+
+.about-img {
+  display: block;
+  margin-left: auto;
+  width: 25rem;
+}
+
+.para-text {
+  color: rgb(91, 91, 91);
+}
+
+.choice-img:hover {
+  /* border: 3px solid red; */
+  cursor: pointer;
+  opacity: 0.6;
+  transition: 150ms;
+}
+
+.activity_header{
+  font-family: 'futura-pt-bold';
+  font-weight: 10000;
+  font-style: normal;
+  font-size: x-large;
+}
+
+.spot-name{
+  font-style: italic;
+}
+
+.comment-text {
+  margin-left: auto;
+  align-self: center;
+}
+

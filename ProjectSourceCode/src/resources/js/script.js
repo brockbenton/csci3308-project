@@ -65,11 +65,11 @@ if (document.getElementById('map')) {
             .bindPopup(
               `
   <div class="card p-3" style="width:300px;">
-    <h5 class="text-center">
+    <h5 class="text-center p-0">
       <strong>${spot.name}</strong>
     </h5>
     ${mediaHtml}
-    <p>Spot Details: ${spot.description || ''}</p>
+    <p><span class="para-text">Spot Details:</span> ${spot.description || ''}</p>
     <a href="/spots/${spot.id}" class="btn btn-sm btn-primary w-100 text-white">
       Open Forum
     </a>
@@ -206,22 +206,21 @@ if (document.getElementById('map')) {
     });
   }
 }
-document.addEventListener('click', function (e) {
-  if (e.target.classList.contains('delete-comment-btn')) {
-    const id = e.target.getAttribute('data-id');
 
-    if (!confirm('Delete this comment?')) return;
-
-    fetch('/delete/' + id, {
-      method: 'DELETE'
-    })
-    .then(res => res.json())
-    .then(data => {
-      if (data.error) {
-        alert(data.error);
-      } else {
-        location.reload(); 
-      }
+// Comment Delete function added - Sam Kasten
+document.addEventListener('DOMContentLoaded', function () {
+  console.log("Delete buttons found:", document.querySelectorAll('.delete-comment-btn').length);
+  
+  document.querySelectorAll('.delete-comment-btn').forEach(button => {
+    button.addEventListener('click', function () {
+      console.log("Delete button clicked, id:", this.getAttribute('data-id'));
+      const commentId = this.getAttribute('data-id');
+      fetch(`/delete/${commentId}`, { method: 'DELETE' })
+        .then(res => res.json())
+        .then(result => {
+          if (result.error) { alert(result.error); return; }
+          this.closest('.card').remove();
+        });
     });
-  }
+  });
 });

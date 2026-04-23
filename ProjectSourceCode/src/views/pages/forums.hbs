@@ -1,5 +1,5 @@
 <div class="d-flex justify-content-center align-items-center vh-100">
-  <div class="card p-4 mt-4 mw-100" style="width: 900px; max-height: 85vh; overflow-y: auto;">
+  <div class="card p-4 mt-4 mw-100 mb-4" style="width: 900px; max-height: 85vh; overflow-y: auto;">
 
     {{#if message}}
     <div class="alert alert-danger text-center">
@@ -14,9 +14,17 @@
 <form action="/addComment" method="POST">
      <input type="hidden" name="spotId" value="{{id}}">
     <label for="comment">Comment</label><br>
-    <input type="text" id="comment" name="comment" class="form-control" required>
 
-    <button type="submit" class="btn btn-primary w-100">Add Comment</button>
+    {{!-- Sam Kasten Tweaked for UI --}}
+    <div class="d-flex flex-row">
+        <div class="p-2 flex-grow-1">
+            <input type="text" id="comment" name="comment" class="form-control" required>
+        </div>
+        <div class="p-2 ms-auto">
+            <button type="submit" class="btn btn-primary w-100 add-comment-btn">Add Comment</button>
+        </div>
+    </div>
+    
 </form>
 {{else}}
     <div class ="text-center">
@@ -28,14 +36,19 @@
 {{/if}}
 
 <p class="mb-1 mt-4">Comments:</p>
-<div class="container scroll-box" style="max-height: 200px; overflow: auto;">
+<div class="container scroll-box">
 {{#each comments}}
     <div class="row">
         <div class="card mb-1">
-            <h6 class="mt-1"><b>{{username}}</b></h6>
+            <h6 class="mt-2 para-text" style="font-size: small;"><b>{{username}}</b></h6>
             <p class="card-subtitle mb-2 text-muted" style="font-size: 0.7rem;">{{time}}</p>
-            <p class="card-text mb-1">{{text}}</p>
-            <button class="delete-comment-btn" data-id="{{id}}">Delete</button>
+            {{!-- Sam Kasten Tweaked for UI --}}
+            <div class = "d-flex flex-row">
+                <p class="card-text mb-1 p-2">{{text}}</p>
+                {{#if isOwner}}
+                    <button class="delete-comment-btn mb-4 p-2 rounded" data-id="{{id}}">Delete</button>
+                {{/if}}
+            </div>
         </div>
     </div>
     
