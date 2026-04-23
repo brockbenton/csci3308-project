@@ -233,7 +233,7 @@ app.get('/spots/:id', async (req, res) => {
 const commentsResult = await db.query(
   `SELECT c.id,
           c.content AS text,
-          c.created_at AS time,
+          TO_CHAR((c.created_at AT TIME ZONE 'UTC' AT TIME ZONE 'America/Denver'), 'Dy Mon DD YYYY FMHH12:MI:SS AM MTC') AS time,
           c.user_id,
           u.username
    FROM comments c
