@@ -12,7 +12,7 @@ A community map application for urban athletes to discover, share, and discuss s
 | Sam Kasten | [@killthecreep](https://github.com/killthecreep) |
 | Atharva | - |
 | Alex | - |
-| Akhil | - |
+| Akhil | [@Akhil986](https://github.com/Akhil986) |
 
 ---
 
